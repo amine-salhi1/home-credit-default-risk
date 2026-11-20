@@ -10,14 +10,16 @@ Prédire si un client aura des difficultés de remboursement (307 511 demandes, 
 2. **Agrégation multi-tables** : une ligne par client (`groupby` + `agg`), puis jointure à gauche : nombre de crédits, dettes, retards et sous-paiements.
 3. **Évaluation rigoureuse** : validation croisée stratifiée à 5 plis (early stopping sur une partie du train), comparaison appariée baseline / avancé, importance des variables par gain.
 
-## Résultats (séparation stratifiée 80/20)
+## Résultats
 
-| Modèle | ROC-AUC |
-|---|---|
-| Baseline | 0,7603 |
-| + historique de crédit et de remboursement | **0,7690** |
+| Modèle | AUC, séparation 80/20 | AUC out-of-fold, validation croisée 5 plis | Écart-type entre plis |
+|---|---|---|---|
+| Baseline (table principale) | 0,7603 | 0,7575 | 0,0043 |
+| + historique de crédit et de remboursement | **0,7690** | **0,7672** | 0,0028 |
 
-<!-- Ajouter ici le tableau de la partie 3 (validation croisée) une fois le notebook relancé. -->
+- L'agrégation des tables d'historique apporte **+0,0098 ± 0,0017 d'AUC**, un gain **positif sur les 5 plis**.
+- La validation croisée donne des scores un peu plus bas que la séparation unique, dont l'early stopping utilisait le jeu de validation : l'estimation initiale était légèrement optimiste.
+- Importance par gain : les scores externes (`EXT_SOURCE_1/2/3`) dominent ; `ORGANIZATION_TYPE`, 1re en nombre de coupes, recule à la 3e place. Meilleure variable construite : le taux de retards de paiement (`INSTALL_LATE_PAYMENT_MEAN`).
 
 ## Lancer
 
